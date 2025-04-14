@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>F1 - Archivo de Temporadas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Archivo de Carreras F1 2024</h1>
+
+  <section>
+    <h2>Descargar carreras completas</h2>
+    <p>Hacé clic en el botón para acceder al paquete con las 10 mejores carreras de 2024 en español:</p>
+    <a href="https://gofile.com/" target="_blank" class="download-button">Descargar</a>
+    <p class="pago">(Requiere pago para acceder)</p>
+  </section>
+
+  <section>
+    <h2>Clasificación por carrera</h2>
+    <select id="raceSelector">
+      <option value="bahrain">Bahréin</option>
+      <option value="jeddah">Jeddah</option>
+      <option value="australia">Australia</option>
+    </select>
+
+    <div id="clasificacion-container">
+      <!-- Aquí se carga el contenido según la carrera -->
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
