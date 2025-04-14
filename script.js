@@ -69,6 +69,45 @@ function cargarCalendario() {
     .then(res => res.json())
     .then(data => {
       div.innerHTML = "";
+      if (!data.MRData.RaceTable.Races.length) {
+        div.innerHTML = "<p>No hay clasificación disponible.</p>";
+        return;
+      }
+
+      data.MRData.RaceTable.Races.forEach(qualy => {
+        if (!qualy.QualifyingResults || qualy.QualifyingResults.length === 0) return;
+        const contenedor = document.createElement("div");
+        contenedor.classList.add("clasificacion-carrera");
+        contenedor.innerHTML = `
+          <h2>${qualy.raceName} - ${qualy.Circuit.circuitName}</h2>
+          <p>Fecha: ${new Date(qualy.date).toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Piloto</th>
+                <th>Equipo</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${qualy.QualifyingResults.map(p => `
+                <tr>
+                  <td>${p.position}</td>
+                  <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+                  <td>${p.Constructor.name}</td>
+                  <td>${p.Q1 || "-"}</td>
+                  <td>${p.Q2 || "-"}</td>
+                  <td>${p.Q3 || "-"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+        div.appendChild(contenedor);
+      });
       data.MRData.RaceTable.Races.forEach(race => {
         const fecha = new Date(race.date);
         const carreraEl = document.createElement("div");
@@ -93,6 +132,45 @@ function cargarResultados() {
     .then(res => res.json())
     .then(data => {
       div.innerHTML = "";
+      if (!data.MRData.RaceTable.Races.length) {
+        div.innerHTML = "<p>No hay clasificación disponible.</p>";
+        return;
+      }
+
+      data.MRData.RaceTable.Races.forEach(qualy => {
+        if (!qualy.QualifyingResults || qualy.QualifyingResults.length === 0) return;
+        const contenedor = document.createElement("div");
+        contenedor.classList.add("clasificacion-carrera");
+        contenedor.innerHTML = `
+          <h2>${qualy.raceName} - ${qualy.Circuit.circuitName}</h2>
+          <p>Fecha: ${new Date(qualy.date).toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Piloto</th>
+                <th>Equipo</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${qualy.QualifyingResults.map(p => `
+                <tr>
+                  <td>${p.position}</td>
+                  <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+                  <td>${p.Constructor.name}</td>
+                  <td>${p.Q1 || "-"}</td>
+                  <td>${p.Q2 || "-"}</td>
+                  <td>${p.Q3 || "-"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+        div.appendChild(contenedor);
+      });
       const race = data.MRData.RaceTable.Races[0];
       if (!race || !race.Results) {
         div.innerHTML = "<p>No hay resultados para esta temporada aún.</p>";
@@ -145,6 +223,45 @@ function cargarPosiciones() {
     .then(res => res.json())
     .then(data => {
       div.innerHTML = "";
+      if (!data.MRData.RaceTable.Races.length) {
+        div.innerHTML = "<p>No hay clasificación disponible.</p>";
+        return;
+      }
+
+      data.MRData.RaceTable.Races.forEach(qualy => {
+        if (!qualy.QualifyingResults || qualy.QualifyingResults.length === 0) return;
+        const contenedor = document.createElement("div");
+        contenedor.classList.add("clasificacion-carrera");
+        contenedor.innerHTML = `
+          <h2>${qualy.raceName} - ${qualy.Circuit.circuitName}</h2>
+          <p>Fecha: ${new Date(qualy.date).toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Piloto</th>
+                <th>Equipo</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${qualy.QualifyingResults.map(p => `
+                <tr>
+                  <td>${p.position}</td>
+                  <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+                  <td>${p.Constructor.name}</td>
+                  <td>${p.Q1 || "-"}</td>
+                  <td>${p.Q2 || "-"}</td>
+                  <td>${p.Q3 || "-"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+        div.appendChild(contenedor);
+      });
       const standings = data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
       if (!standings) {
         div.innerHTML = "<p>No hay posiciones disponibles.</p>";
@@ -183,10 +300,49 @@ function cargarClasificacion() {
   const div = document.getElementById("clasificacion");
   div.innerHTML = "Cargando clasificación...";
 
-  fetch(`https://ergast.com/api/f1/${temporadaActual}/last/qualifying.json`)
+  fetch(`https://ergast.com/api/f1/${temporadaActual}/qualifying.json`)
     .then(res => res.json())
     .then(data => {
       div.innerHTML = "";
+      if (!data.MRData.RaceTable.Races.length) {
+        div.innerHTML = "<p>No hay clasificación disponible.</p>";
+        return;
+      }
+
+      data.MRData.RaceTable.Races.forEach(qualy => {
+        if (!qualy.QualifyingResults || qualy.QualifyingResults.length === 0) return;
+        const contenedor = document.createElement("div");
+        contenedor.classList.add("clasificacion-carrera");
+        contenedor.innerHTML = `
+          <h2>${qualy.raceName} - ${qualy.Circuit.circuitName}</h2>
+          <p>Fecha: ${new Date(qualy.date).toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Piloto</th>
+                <th>Equipo</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${qualy.QualifyingResults.map(p => `
+                <tr>
+                  <td>${p.position}</td>
+                  <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+                  <td>${p.Constructor.name}</td>
+                  <td>${p.Q1 || "-"}</td>
+                  <td>${p.Q2 || "-"}</td>
+                  <td>${p.Q3 || "-"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+        div.appendChild(contenedor);
+      });
       const qualy = data.MRData.RaceTable.Races[0];
       if (!qualy || !qualy.QualifyingResults) {
         div.innerHTML = "<p>No hay clasificación disponible.</p>";
