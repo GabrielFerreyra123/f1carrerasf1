@@ -4,18 +4,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>F1 - Archivo de Temporadas</title>
+  <title>DRS ACTIVADO</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <header>
-    <h1>F1 - Archivo de Temporadas 🏁</h1>
+    <h1 class="titulo-drs">🟥🟩 DRS ACTIVADO 🟩🟥</h1>
     <nav>
-      <button data-seccion="calendario">Calendario</button>
-      <button data-seccion="resultados">Resultados</button>
-      <button data-seccion="posiciones">Posiciones</button>
-      <button data-seccion="clasificacion">Clasificación</button>
+      <button data-seccion="calendario">🗓️ Calendario</button>
+      <button data-seccion="resultados">🏁 Resultados</button>
+      <button data-seccion="posiciones">📊 Posiciones</button>
+      <button data-seccion="clasificacion">⏱️ Clasificación</button>
     </nav>
     <div class="selector-temporada">
       <label for="temporadaSelector">Temporada:</label>
@@ -39,8 +39,16 @@
     <div id="calendario" class="seccion activa"></div>
     <div id="resultados" class="seccion"></div>
     <div id="posiciones" class="seccion"></div>
-    <div id="clasificacion" class="seccion"></div>
-  </main>
+    <div id="clasificacion" class="seccion">
+      <div id="selectorCarreraClasificacion"></div>
+      <div id="detalleClasificacion"></div>
+    </div>
+  
+    <div id="loader" class="loader-container">
+      <div class="car-loader">🏎️💨</div>
+    </div>
+    </main>
+
   
   <footer>
     <p>Hecho con pasión por la F1 ❤️</p>

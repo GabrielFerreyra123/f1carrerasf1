@@ -34,7 +34,18 @@ function mostrarSeccion(id) {
   document.getElementById(id).classList.add("activa");
 }
 
+
+function mostrarLoader() {
+  document.getElementById("loader").style.display = "flex";
+}
+
+function ocultarLoader() {
+  document.getElementById("loader").style.display = "none";
+}
+
 function cargarTodo() {
+  mostrarLoader();
+
   cargarCalendario();
   cargarResultados();
   cargarPosiciones();
@@ -67,7 +78,7 @@ function cargarCalendario() {
 
   fetch(`https://ergast.com/api/f1/${temporadaActual}.json`)
     .then(res => res.json())
-    .then(data => {
+    .then(data => { ocultarLoader();
       div.innerHTML = "";
       if (!data.MRData.RaceTable.Races.length) {
         div.innerHTML = "<p>No hay clasificación disponible.</p>";
@@ -130,7 +141,7 @@ function cargarResultados() {
 
   fetch(`https://ergast.com/api/f1/${temporadaActual}/last/results.json`)
     .then(res => res.json())
-    .then(data => {
+    .then(data => { ocultarLoader();
       div.innerHTML = "";
       if (!data.MRData.RaceTable.Races.length) {
         div.innerHTML = "<p>No hay clasificación disponible.</p>";
@@ -221,7 +232,7 @@ function cargarPosiciones() {
 
   fetch(`https://ergast.com/api/f1/${temporadaActual}/driverStandings.json`)
     .then(res => res.json())
-    .then(data => {
+    .then(data => { ocultarLoader();
       div.innerHTML = "";
       if (!data.MRData.RaceTable.Races.length) {
         div.innerHTML = "<p>No hay clasificación disponible.</p>";
@@ -296,13 +307,77 @@ function cargarPosiciones() {
 }
 
 // ⏱️ CLASIFICACIÓN
-function cargarClasificacion() {
-  const div = document.getElementById("clasificacion");
-  div.innerHTML = "Cargando clasificación...";
 
-  fetch(`https://ergast.com/api/f1/${temporadaActual}/qualifying.json`)
+function cargarClasificacion() {
+  const contenedorSelector = document.getElementById("selectorCarreraClasificacion");
+  const detalle = document.getElementById("detalleClasificacion");
+  contenedorSelector.innerHTML = "Cargando carreras...";
+  detalle.innerHTML = "";
+
+  fetch(`https://ergast.com/api/f1/${temporadaActual}.json`)
     .then(res => res.json())
-    .then(data => {
+    .then(data => { ocultarLoader();
+      const carreras = data.MRData.RaceTable.Races;
+      contenedorSelector.innerHTML = `
+        <label for="carreraSelect">Seleccioná una carrera:</label>
+        <select id="carreraSelect">
+          ${carreras.map((r, i) => `<option value="${r.round}">${r.round} - ${r.raceName}</option>`).join("")}
+        </select>
+      `;
+      document.getElementById("carreraSelect").addEventListener("change", e => {
+        mostrarClasificacionCarrera(e.target.value);
+      });
+      mostrarClasificacionCarrera(carreras[0].round);
+    });
+}
+
+function mostrarClasificacionCarrera(round) {
+  const detalle = document.getElementById("detalleClasificacion");
+  detalle.innerHTML = "Cargando clasificación...";
+
+  fetch(`https://ergast.com/api/f1/${temporadaActual}/${round}/qualifying.json`)
+    .then(res => res.json())
+    .then(data => { ocultarLoader();
+      detalle.innerHTML = "";
+      const qualy = data.MRData.RaceTable.Races[0];
+      if (!qualy || !qualy.QualifyingResults) {
+        detalle.innerHTML = "<p>No hay clasificación disponible.</p>";
+        return;
+      }
+
+      detalle.innerHTML = `
+        <h2>${qualy.raceName} - ${qualy.Circuit.circuitName}</h2>
+        <p>Fecha: ${new Date(qualy.date).toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Pos</th>
+              <th>Piloto</th>
+              <th>Equipo</th>
+              <th>Q1</th>
+              <th>Q2</th>
+              <th>Q3</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${qualy.QualifyingResults.map(p => `
+              <tr>
+                <td>${p.position}</td>
+                <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+                <td>${p.Constructor.name}</td>
+                <td>${p.Q1 || "-"}</td>
+                <td>${p.Q2 || "-"}</td>
+                <td>${p.Q3 || "-"}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    });
+}
+/qualifying.json`)
+    .then(res => res.json())
+    .then(data => { ocultarLoader();
       div.innerHTML = "";
       if (!data.MRData.RaceTable.Races.length) {
         div.innerHTML = "<p>No hay clasificación disponible.</p>";

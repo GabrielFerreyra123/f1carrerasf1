@@ -182,7 +182,88 @@ footer p::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.clasificacion-carrera {
-  margin-bottom: 40px;
-  animation: fadeInUp 0.5s ease;
+.titulo-drs {
+  font-size: 2.5rem;
+  text-shadow: 0 0 6px #ff0000;
+  animation: flashTitle 1s ease infinite alternate;
+  letter-spacing: 2px;
+}
+
+@keyframes flashTitle {
+  from { color: #ffffff; }
+  to { color: #e10600; }
+}
+
+#selectorCarreraClasificacion {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#selectorCarreraClasificacion select {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #e10600;
+  color: white;
+  font-weight: bold;
+}
+
+.loader-container {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.75);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.car-loader {
+  font-size: 3rem;
+  animation: drive 1s linear infinite;
+}
+
+@keyframes drive {
+  0%   { transform: translateX(-100px); }
+  100% { transform: translateX(100px); }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(120deg, #111111 25%, #1a1a1a 50%, #111111 75%);
+  background-size: 400% 400%;
+  animation: fondoAnimado 15s ease infinite;
+  z-index: -1;
+}
+
+@keyframes fondoAnimado {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.seccion {
+  display: none;
+  padding: 20px;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.seccion.activa {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+}
+
+table, .race {
+  animation: fadeZoom 0.6s ease;
+}
+
+@keyframes fadeZoom {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }
