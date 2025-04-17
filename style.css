@@ -1,1 +1,125 @@
-[AQUÍ VA EL CSS MEJORADO LUEGO]
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #121212;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+body.light-mode {
+  background-color: #f9f9f9;
+  color: #111;
+}
+header {
+  background: linear-gradient(to right, #e10600, #8c0000);
+  padding: 20px;
+  text-align: center;
+}
+.titulo-drs {
+  font-size: 2.2rem;
+  margin: 0;
+  animation: flash 1s ease-in-out infinite alternate;
+}
+@keyframes flash {
+  from { color: white; }
+  to { color: #ffd700; }
+}
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+nav button {
+  background-color: #e10600;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+nav button:hover {
+  background-color: #b80000;
+}
+.selector-temporada {
+  margin: 15px;
+  text-align: center;
+}
+main {
+  padding: 20px;
+}
+.seccion {
+  display: none;
+}
+.seccion.activa {
+  display: block;
+}
+.race {
+  background: #1f1f1f;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+.race a {
+  color: #e10600;
+  text-decoration: none;
+}
+table {
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+  background-color: #1f1f1f;
+}
+th, td {
+  padding: 10px;
+  border: 1px solid #fff3;
+  text-align: center;
+}
+th {
+  background-color: #e10600;
+  color: white;
+}
+footer {
+  background-color: #1a1a1a;
+  color: #bbb;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  border-top: 2px solid #e10600;
+}
+#modo-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background-color: #e10600;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 1000;
+}
+#modo-toggle:hover {
+  background-color: #c30000;
+}
+.loader-container {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.car-loader {
+  font-size: 3rem;
+  animation: move 1s linear infinite;
+}
+@keyframes move {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(100px); }
+}
