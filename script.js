@@ -1,190 +1,223 @@
-
 let temporadaActual = "2025";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const modoBtn = document.getElementById("modo-toggle");
-  const savedMode = localStorage.getItem("modo");
-  if (savedMode === "claro") document.body.classList.add("light-mode");
-
-  modoBtn.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode");
-    localStorage.setItem("modo", document.body.classList.contains("light-mode") ? "claro" : "oscuro");
-  });
-
+  // Botones de navegación
   document.querySelectorAll("nav button").forEach(boton => {
     boton.addEventListener("click", () => {
-      document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
-      document.getElementById(boton.getAttribute("data-seccion")).classList.add("activa");
+      mostrarSeccion(boton.getAttribute("data-seccion"));
     });
   });
 
+  // Selector de temporada
   const selector = document.getElementById("temporadaSelector");
+  selector.value = temporadaActual;
   selector.addEventListener("change", () => {
     temporadaActual = selector.value;
     cargarTodo();
   });
 
+  // Botón modo claro/oscuro
+  const modoBtn = document.createElement("button");
+  modoBtn.id = "modo-toggle";
+  modoBtn.innerText = "Modo Claro / Oscuro";
+  document.body.appendChild(modoBtn);
+
+  modoBtn.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+  });
+
   cargarTodo();
 });
 
-function mostrarLoader() {
-  document.getElementById("loader").style.display = "flex";
-}
-function ocultarLoader() {
-  document.getElementById("loader").style.display = "none";
+function mostrarSeccion(id) {
+  document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
+  document.getElementById(id).classList.add("activa");
 }
 
 function cargarTodo() {
-  mostrarLoader();
-  Promise.all([
-    cargarCalendario(),
-    cargarResultados(),
-    cargarPosiciones(),
-    cargarClasificacion()
-  ]).then(() => ocultarLoader());
+  cargarCalendario();
+  cargarResultados();
+  cargarPosiciones();
+  cargarClasificacion();
 }
 
+// 🏳️ Banderas
+function getFlag(nationality) {
+  const flags = {
+    British: "gb", Spanish: "es", German: "de", Dutch: "nl",
+    Mexican: "mx", Monegasque: "mc", French: "fr", Australian: "au",
+    Canadian: "ca", Finnish: "fi", Japanese: "jp", Chinese: "cn",
+    Thai: "th", Brazilian: "br", Argentine: "ar", Italian: "it",
+    American: "us", Danish: "dk"
+  };
+  const code = flags[nationality] || "xx";
+  return `<img class="flag" src="https://flagcdn.com/h20/${code}.png" alt="${nationality}">`;
+}
+
+// 👤 Fotos de pilotos
+function getPilotImg(driver) {
+  const name = driver.familyName.toLowerCase();
+  return `<img src="https://www.formula1.com/content/dam/fom-website/drivers/${name}.jpg.transform/2col/image.jpg" alt="${driver.familyName}" onerror="this.style.display='none'">`;
+}
+
+// 🗓️ CALENDARIO
 function cargarCalendario() {
   const div = document.getElementById("calendario");
-  return fetch(`https://ergast.com/api/f1/${temporadaActual}.json`)
+  div.innerHTML = "Cargando calendario...";
+
+  fetch(`https://ergast.com/api/f1/${temporadaActual}.json`)
     .then(res => res.json())
     .then(data => {
       div.innerHTML = "";
       data.MRData.RaceTable.Races.forEach(race => {
         const fecha = new Date(race.date);
-        const html = `
-          <div class="race">
-            <h2><a href="https://www.youtube.com/results?search_query=F1+${race.raceName}+${temporadaActual}+completa" target="_blank">${race.raceName}</a></h2>
-            <p><strong>Fecha:</strong> ${fecha.toLocaleDateString("es-AR")}</p>
-            <p><strong>Circuito:</strong> ${race.Circuit.circuitName}</p>
-            <p><strong>Ubicación:</strong> ${race.Circuit.Location.locality}, ${race.Circuit.Location.country}</p>
-          </div>`;
-        div.innerHTML += html;
-      });
-    });
-}
-
-function cargarResultados() {
-  const selectorDiv = document.getElementById("selectorCarreraResultados");
-  const detalleDiv = document.getElementById("detalleResultados");
-
-  return fetch(`https://ergast.com/api/f1/${temporadaActual}.json`)
-    .then(res => res.json())
-    .then(data => {
-      const carreras = data.MRData.RaceTable.Races;
-      selectorDiv.innerHTML = `
-        <label for="carreraSelectResultados">Seleccioná una carrera:</label>
-        <select id="carreraSelectResultados">
-          ${carreras.map(r => `<option value="${r.round}">${r.round} - ${r.raceName}</option>`).join("")}
-        </select>
-      `;
-      const select = document.getElementById("carreraSelectResultados");
-      select.addEventListener("change", e => mostrarResultadosCarrera(e.target.value));
-      return mostrarResultadosCarrera(carreras[0].round);
-    });
-
-  function mostrarResultadosCarrera(round) {
-    detalleDiv.innerHTML = "Cargando...";
-    return fetch(`https://ergast.com/api/f1/${temporadaActual}/${round}/results.json`)
-      .then(res => res.json())
-      .then(data => {
-        const race = data.MRData.RaceTable.Races[0];
-        if (!race) return detalleDiv.innerHTML = "<p>No hay resultados.</p>";
-        detalleDiv.innerHTML = `
-          <h2>${race.raceName}</h2>
-          <table><thead><tr>
-            <th>Pos</th><th>Piloto</th><th>Equipo</th><th>Vueltas</th><th>Tiempo / Estado</th>
-          </tr></thead><tbody>
-            ${race.Results.map(r => `
-              <tr>
-                <td>${r.position}</td>
-                <td>${r.Driver.givenName} ${r.Driver.familyName}</td>
-                <td>${r.Constructor.name}</td>
-                <td>${r.laps}</td>
-                <td>${r.Time?.time || r.status}</td>
-              </tr>
-            `).join("")}
-          </tbody></table>
+        const carreraEl = document.createElement("div");
+        carreraEl.className = "race";
+        carreraEl.innerHTML = `
+          <h2><a href="https://www.youtube.com/results?search_query=F1+${race.raceName}+${temporadaActual}+completa" target="_blank">${race.raceName}</a></h2>
+          <p><strong>Fecha:</strong> ${fecha.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+          <p><strong>Circuito:</strong> ${race.Circuit.circuitName}</p>
+          <p><strong>Ubicación:</strong> ${race.Circuit.Location.locality}, ${race.Circuit.Location.country}</p>
         `;
+        div.appendChild(carreraEl);
       });
-  }
+    });
 }
 
-function cargarPosiciones() {
-  const divPilotos = document.getElementById("tablaPosicionesPilotos");
-  const divEquipos = document.getElementById("tablaPosicionesEquipos");
+// 🏁 RESULTADOS
+function cargarResultados() {
+  const div = document.getElementById("resultados");
+  div.innerHTML = "Cargando resultados...";
 
-  return Promise.all([
-    fetch(`https://ergast.com/api/f1/${temporadaActual}/driverStandings.json`).then(r => r.json()),
-    fetch(`https://ergast.com/api/f1/${temporadaActual}/constructorStandings.json`).then(r => r.json())
-  ]).then(([pilotos, equipos]) => {
-    const p = pilotos.MRData.StandingsTable.StandingsLists[0]?.DriverStandings || [];
-    divPilotos.innerHTML = `<h2>Pilotos</h2><table>
-      <thead><tr><th>Pos</th><th>Piloto</th><th>Equipo</th><th>Puntos</th></tr></thead><tbody>
-      ${p.map(p => `
-        <tr${p.position === "1" ? " style='background:gold;color:black'" : ""}>
-          <td>${p.position}</td>
-          <td>${p.Driver.givenName} ${p.Driver.familyName}</td>
-          <td>${p.Constructors[0].name}</td>
-          <td>${p.points}</td>
-        </tr>`).join("")}
-      </tbody></table>`;
-
-    const c = equipos.MRData.StandingsTable.StandingsLists[0]?.ConstructorStandings || [];
-    divEquipos.innerHTML = `<h2>Constructores</h2><table>
-      <thead><tr><th>Pos</th><th>Equipo</th><th>Puntos</th></tr></thead><tbody>
-      ${c.map(e => `
-        <tr${e.position === "1" ? " style='background:gold;color:black'" : ""}>
-          <td>${e.position}</td>
-          <td>${e.Constructor.name}</td>
-          <td>${e.points}</td>
-        </tr>`).join("")}
-      </tbody></table>`;
-  });
-}
-
-function cargarClasificacion() {
-  const selector = document.getElementById("selectorCarreraClasificacion");
-  const detalle = document.getElementById("detalleClasificacion");
-
-  return fetch(`https://ergast.com/api/f1/${temporadaActual}.json`)
+  fetch(`https://ergast.com/api/f1/${temporadaActual}/last/results.json`)
     .then(res => res.json())
     .then(data => {
-      const carreras = data.MRData.RaceTable.Races;
-      selector.innerHTML = `
-        <label for="carreraSelectClasificacion">Seleccioná una carrera:</label>
-        <select id="carreraSelectClasificacion">
-          ${carreras.map(r => `<option value="${r.round}">${r.round} - ${r.raceName}</option>`).join("")}
-        </select>
-      `;
-      const select = document.getElementById("carreraSelectClasificacion");
-      select.addEventListener("change", e => mostrarClasificacion(e.target.value));
-      return mostrarClasificacion(carreras[0].round);
-    });
+      div.innerHTML = "";
+      const race = data.MRData.RaceTable.Races[0];
+      if (!race || !race.Results) {
+        div.innerHTML = "<p>No hay resultados para esta temporada aún.</p>";
+        return;
+      }
 
-  function mostrarClasificacion(round) {
-    detalle.innerHTML = "Cargando...";
-    return fetch(`https://ergast.com/api/f1/${temporadaActual}/${round}/qualifying.json`)
-      .then(res => res.json())
-      .then(data => {
-        const q = data.MRData.RaceTable.Races[0];
-        if (!q || !q.QualifyingResults) return detalle.innerHTML = "<p>No hay datos.</p>";
-        detalle.innerHTML = `
-          <h2>${q.raceName}</h2>
-          <table><thead><tr>
-            <th>Pos</th><th>Piloto</th><th>Equipo</th><th>Q1</th><th>Q2</th><th>Q3</th>
-          </tr></thead><tbody>
-            ${q.QualifyingResults.map(r => `
-              <tr>
-                <td>${r.position}</td>
-                <td>${r.Driver.givenName} ${r.Driver.familyName}</td>
-                <td>${r.Constructor.name}</td>
-                <td>${r.Q1 || "-"}</td>
-                <td>${r.Q2 || "-"}</td>
-                <td>${r.Q3 || "-"}</td>
-              </tr>
-            `).join("")}
-          </tbody></table>`;
-      });
-  }
+      const titulo = document.createElement("h2");
+      titulo.textContent = `${race.raceName} - ${race.Circuit.circuitName}`;
+      div.appendChild(titulo);
+
+      const subtitulo = document.createElement("p");
+      subtitulo.textContent = `Fecha: ${new Date(race.date).toLocaleDateString("es-AR", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric"
+      })}`;
+      div.appendChild(subtitulo);
+
+      const tabla = document.createElement("table");
+      tabla.innerHTML = `
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Piloto</th>
+            <th>Equipo</th>
+            <th>Vueltas</th>
+            <th>Tiempo / Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${race.Results.map(p => `
+            <tr>
+              <td>${p.position}</td>
+              <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)}${p.Driver.givenName} ${p.Driver.familyName}</td>
+              <td>${p.Constructor.name}</td>
+              <td>${p.laps}</td>
+              <td>${p.Time?.time || p.status}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      div.appendChild(tabla);
+    });
+}
+
+// 🏆 POSICIONES
+function cargarPosiciones() {
+  const div = document.getElementById("posiciones");
+  div.innerHTML = "Cargando posiciones...";
+
+  fetch(`https://ergast.com/api/f1/${temporadaActual}/driverStandings.json`)
+    .then(res => res.json())
+    .then(data => {
+      div.innerHTML = "";
+      const standings = data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
+      if (!standings) {
+        div.innerHTML = "<p>No hay posiciones disponibles.</p>";
+        return;
+      }
+
+      const tabla = document.createElement("table");
+      tabla.innerHTML = `
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Piloto</th>
+            <th>Nacionalidad</th>
+            <th>Equipo</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${standings.map(p => `
+            <tr>
+              <td>${p.position}</td>
+              <td class="piloto">${getPilotImg(p.Driver)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+              <td>${getFlag(p.Driver.nationality)} ${p.Driver.nationality}</td>
+              <td>${p.Constructors[0].name}</td>
+              <td>${p.points}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      div.appendChild(tabla);
+    });
+}
+
+// ⏱️ CLASIFICACIÓN
+function cargarClasificacion() {
+  const div = document.getElementById("clasificacion");
+  div.innerHTML = "Cargando clasificación...";
+
+  fetch(`https://ergast.com/api/f1/${temporadaActual}/last/qualifying.json`)
+    .then(res => res.json())
+    .then(data => {
+      div.innerHTML = "";
+      const qualy = data.MRData.RaceTable.Races[0];
+      if (!qualy || !qualy.QualifyingResults) {
+        div.innerHTML = "<p>No hay clasificación disponible.</p>";
+        return;
+      }
+
+      const tabla = document.createElement("table");
+      tabla.innerHTML = `
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Piloto</th>
+            <th>Equipo</th>
+            <th>Q1</th>
+            <th>Q2</th>
+            <th>Q3</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${qualy.QualifyingResults.map(p => `
+            <tr>
+              <td>${p.position}</td>
+              <td class="piloto">${getPilotImg(p.Driver)} ${getFlag(p.Driver.nationality)} ${p.Driver.givenName} ${p.Driver.familyName}</td>
+              <td>${p.Constructor.name}</td>
+              <td>${p.Q1 || "-"}</td>
+              <td>${p.Q2 || "-"}</td>
+              <td>${p.Q3 || "-"}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      div.appendChild(tabla);
+    });
 }
