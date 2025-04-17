@@ -1,14 +1,13 @@
+
 let temporadaActual = "2025";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Botones de navegación
   document.querySelectorAll("nav button").forEach(boton => {
     boton.addEventListener("click", () => {
       mostrarSeccion(boton.getAttribute("data-seccion"));
     });
   });
 
-  // Selector de temporada
   const selector = document.getElementById("temporadaSelector");
   selector.value = temporadaActual;
   selector.addEventListener("change", () => {
@@ -16,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarTodo();
   });
 
-  // Botón modo claro/oscuro
   const modoBtn = document.createElement("button");
   modoBtn.id = "modo-toggle";
   modoBtn.innerText = "Modo Claro / Oscuro";
@@ -41,7 +39,6 @@ function cargarTodo() {
   cargarClasificacion();
 }
 
-// 🏳️ Banderas
 function getFlag(nationality) {
   const flags = {
     British: "gb", Spanish: "es", German: "de", Dutch: "nl",
@@ -54,13 +51,11 @@ function getFlag(nationality) {
   return `<img class="flag" src="https://flagcdn.com/h20/${code}.png" alt="${nationality}">`;
 }
 
-// 👤 Fotos de pilotos
 function getPilotImg(driver) {
   const name = driver.familyName.toLowerCase();
   return `<img src="https://www.formula1.com/content/dam/fom-website/drivers/${name}.jpg.transform/2col/image.jpg" alt="${driver.familyName}" onerror="this.style.display='none'">`;
 }
 
-// 🗓️ CALENDARIO
 function cargarCalendario() {
   const div = document.getElementById("calendario");
   div.innerHTML = "Cargando calendario...";
@@ -84,7 +79,6 @@ function cargarCalendario() {
     });
 }
 
-// 🏁 RESULTADOS
 function cargarResultados() {
   const div = document.getElementById("resultados");
   div.innerHTML = "Cargando resultados...";
@@ -136,7 +130,6 @@ function cargarResultados() {
     });
 }
 
-// 🏆 POSICIONES
 function cargarPosiciones() {
   const div = document.getElementById("posiciones");
   div.innerHTML = "Cargando posiciones...";
@@ -178,7 +171,6 @@ function cargarPosiciones() {
     });
 }
 
-// ⏱️ CLASIFICACIÓN
 function cargarClasificacion() {
   const div = document.getElementById("clasificacion");
   div.innerHTML = "Cargando clasificación...";

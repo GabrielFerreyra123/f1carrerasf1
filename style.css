@@ -1,3 +1,4 @@
+
 body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
@@ -110,11 +111,6 @@ body.light-mode th, body.light-mode td {
 }
 
 th {
-  background-color: #e10600;
-  color: white;
-}
-
-body.light-mode th {
   background-color: #e10600;
   color: white;
 }
